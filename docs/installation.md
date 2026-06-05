@@ -105,6 +105,45 @@ The tools directory should contain:
 
 Without these tools, the skill operates in "agent-only" mode — slower but fully functional using Claude's built-in capabilities.
 
+## Troubleshooting
+
+### MinerU fails with "unsupported CPU" on Windows
+
+**Symptom**: `magic-pdf` crashes on import with CPU architecture errors.
+
+**Cause**: `py-cpuinfo` cannot detect CPU architecture on some Windows systems (especially AMD Ryzen), returning an empty string.
+
+**Fix**: Patch `cpuinfo/cpuinfo.py` to add a Windows fallback:
+
+```python
+# In cpuinfo.py, find the Windows architecture detection section
+# Add fallback when arch_string_raw is empty:
+import platform
+if not arch_string_raw:
+    machine = platform.machine().upper()
+    if machine in ('AMD64', 'X86_64'):
+        arch_string_raw = 'X86_64'
+    elif machine == 'ARM64':
+        arch_string_raw = 'ARM_8'
+```
+
+### Windows long path errors
+
+**Symptom**: FileNotFoundError or OSError with paths exceeding 260 characters.
+
+**Cause**: PDF filenames + MinerU output subdirectories exceed Windows MAX_PATH.
+
+**Fix** (choose one):
+1. Enable long paths system-wide: `reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f`
+2. Use short filenames for PDFs before processing
+3. Create directory junctions to shorten output paths: `mklink /J short_name "long path"`
+
+### MinerU output already exists
+
+If MinerU has already been run on a PDF (e.g., from a prior `pdf-kb` run), the skill will detect and reuse existing output. Set the `_mineru_output_dir` parameter or ensure the raw output is in the expected location (`output/mineru/` in the workspace).
+
+---
+
 ## Verification
 
 After installation, test with a short PDF:
