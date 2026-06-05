@@ -1,0 +1,43 @@
+# Test outputs (large binary files)
+test-runs/
+validation/
+
+# Working copy of skill (skill/ is the canonical distribution)
+best-pdf-kb-skill/
+
+# PDF test papers
+*.pdf
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# MinerU temp outputs
+_tmp_*/
+raw/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# SQLite (generated, not source)
+*.sqlite
+
+# Large image assets (generated)
+assets/figures/*.png
+assets/figures/*.jpg
+assets/page_previews/
+
+# Planning docs (internal, not needed for distribution)
+docs/superpowers/
+comparison/
+analysis/
