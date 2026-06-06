@@ -111,15 +111,19 @@ const mindmapData = {
 .mm-node {
   position: absolute;
   border-radius: 6px;
-  padding: 0.4rem 0.75rem;
+  padding: 0.45rem 0.8rem;
   font-size: 0.78rem;
   max-width: 220px;
+  min-height: 1.6em;
   word-wrap: break-word;
+  overflow-wrap: break-word;
   cursor: pointer;
   user-select: none;
-  line-height: 1.45;
+  line-height: 1.5;
   transition: box-shadow 0.2s, transform 0.15s;
   white-space: normal;
+  display: flex;
+  align-items: center;
 }
 .mm-node:hover {
   box-shadow: 0 3px 12px rgba(0,0,0,0.15);
@@ -206,8 +210,8 @@ const mindmapData = {
   // Initial state: expand only root (level 0) children are visible but collapsed
   // Nothing in expanded set = only root's direct children shown, all collapsed
 
-  const LEVEL_X = [30, 230, 430, 620, 790]; // X positions per level
-  const V_GAP = 32; // Vertical gap between sibling nodes
+  const LEVEL_X = [30, 240, 450, 650, 820]; // X positions per level
+  const V_GAP = 44; // Vertical gap between sibling nodes (enough for 2-line text)
 
   function render() {
     const canvas = document.getElementById('mindmap-canvas');
