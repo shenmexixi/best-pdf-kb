@@ -69,14 +69,18 @@ The HTML reader must maintain quality regardless of paper length. Do NOT generat
 2. **Write section by section**: Each section generated independently (2000-3000 Chinese characters)
 3. **Assemble**: Concatenate sections, add header/footer/TOC/mind map
 4. **Verify coherence**: Check transitions between sections, fix any gaps
+5. **Inject base64 images**: Post-processing script replaces all `<img src="...">` with base64 data URIs
 
 ### Depth adaptation by paper length:
-| Paper length | Sections | Per-section depth | Total HTML |
+| Paper length | Sections | Per-section depth | Total HTML 中文字数 |
 |:---:|:---:|------|------|
 | ≤15 pages | 5-6 sections | 1500-2000 字 | ~10K 字 |
 | 15-30 pages | 6-7 sections | 2000-3000 字 | ~15K 字 |
 | 30-60 pages | 7 sections | 2500-3500 字 | ~20K 字 |
 | 60+ pages | 7 sections | 3000-4000 字 | ~25K 字 |
+
+### Content quality verification:
+After writing, count Chinese characters in the HTML (excluding tags/scripts). If below the target range, the content is insufficient — go back and expand the weakest sections. A 17-page paper should have at minimum 8,000 中文字 of explanation content.
 
 ### Key rules for long papers:
 - Never sacrifice depth for brevity — if a paper has 8 experiments, cover all 8
@@ -87,13 +91,12 @@ The HTML reader must maintain quality regardless of paper length. Do NOT generat
 
 ## Figure Block Structure
 
-Every figure MUST be embedded as base64 data URI so the HTML is fully self-contained and portable. Do NOT use external file paths.
+During writing, use relative paths for figures. Base64 injection happens as a post-processing step (see workflow.md Step 8d).
 
-**Embedding method:** Read each figure image file, convert to base64, and embed as `data:image/png;base64,...` (or `data:image/jpeg;base64,...`).
-
+**During writing (Step 8b):**
 ```html
 <div class="figure-block">
-  <img src="data:image/png;base64,iVBORw0KGgo..." alt="[Figure label]">
+  <img src="../assets/figures/figure_XX.jpg" alt="[Figure label]">
   <p class="caption">[Original English caption]</p>
   <p class="caption-zh">[Chinese caption]</p>
   <div class="explanation">
@@ -103,6 +106,16 @@ Every figure MUST be embedded as base64 data URI so the HTML is fully self-conta
   </div>
 </div>
 ```
+
+**After post-processing (Step 8d), the final HTML will have:**
+```html
+<img src="data:image/jpeg;base64,/9j/4AAQ..." alt="[Figure label]">
+```
+
+This two-phase approach ensures:
+- Agent dedicates 100% of context to content quality during writing
+- No base64 noise competes with the writing task
+- Final HTML is still fully self-contained and portable
 
 **How to embed (Python):**
 ```python
@@ -218,12 +231,20 @@ Use these CSS classes:
 
 ## Verification Checklist (before delivery)
 
+### After Step 8c (content verification):
+- [ ] Chinese character count meets target (≥8000 for 15-page paper, see depth table)
 - [ ] No `????` or Unicode replacement characters
-- [ ] All images embedded as base64 data URIs (no external file paths)
-- [ ] Every paper figure has a corresponding `<img>` tag with embedded data
+- [ ] Every paper figure has a corresponding `<img>` tag
 - [ ] JavaScript passes syntax check (balanced braces/parens)
 - [ ] TOC has only top-level sections (5-7)
 - [ ] Mind map canvas supports drag and zoom
+- [ ] No "beginner" labels unless user requested
+- [ ] Responsive layout works at different widths
+
+### After Step 8d (base64 injection):
+- [ ] All `<img>` tags now use `data:` URIs (no external file paths remaining)
+- [ ] HTML file is fully self-contained (opens correctly when moved to any location)
+- [ ] File size reasonable (typically 1-5 MB depending on figure count)
 - [ ] No "beginner" labels unless user requested
 - [ ] Responsive layout works at different widths
 - [ ] HTML file is fully self-contained (opens correctly when moved to any location)

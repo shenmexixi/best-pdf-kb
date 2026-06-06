@@ -94,7 +94,8 @@ See `references/workflow.md` for full step-by-step detail.
 
 - Never fabricate data, figure captions, or numeric claims
 - Every chunk/node/edge must have provenance (page_id, chunk_id)
-- **All images in HTML must be embedded as base64 data URIs** — the HTML file must be fully self-contained, openable anywhere without external dependencies
+- **HTML must be self-contained** — after Step 8d post-processing, all images become base64 data URIs. During writing (Step 8b), use relative paths to keep agent context clean.
+- **Content depth**: Chinese character count must meet the target in the depth adaptation table (≥8000 for a 15-page paper). If below target, expand weakest sections.
 - Mind map uses the EXACT template from `references/mindmap-template.md`
 - HTML has 5-7 top-level sections, not flat headings
 - Figures nested under relevant section, not a standalone gallery

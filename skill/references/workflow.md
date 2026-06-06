@@ -174,7 +174,7 @@ Follow `references/html-reader-rules.md` for the complete spec. Key points:
 4. Every figure gets a figure-block (image + original caption + Chinese caption + explanation)
 5. Apply the style preset (academic/technical/popular) to tone and depth
 6. Include TOC, meta-card, tech-cards, result-highlights as appropriate
-7. **Embed all images as base64 data URIs** — read each figure from `assets/figures/`, encode as base64, use `<img src="data:image/png;base64,...">`. The HTML must be fully self-contained (no external file references). This ensures it can be opened anywhere without broken images.
+7. **Use relative image paths during writing** — write `<img src="../assets/figures/xxx.jpg">` for now. Base64 embedding happens in Step 8d (post-processing).
 
 ### Adaptive Writing Strategy (长文档自适应)
 
@@ -190,15 +190,53 @@ Based on KB data (chunks, figures, terms), produce a 7-section outline with:
 **Step 8b — Write section by section:**
 For each section in the outline:
 - Generate HTML content for that section only (2000-3000 Chinese characters)
-- Include relevant figure-blocks with base64-embedded images
+- Include relevant figure-blocks with `<img src="../assets/figures/xxx.jpg">`
 - Ensure the section opens with a bridge sentence from the previous section
 - Apply style preset tone rules
+- Focus 100% on content quality — do NOT worry about base64 encoding yet
 
 **Step 8c — Assemble and verify coherence:**
 - Concatenate all sections into the full HTML
 - Add header (meta-card, TOC) and footer
 - Embed mind map JS from template
 - Verify narrative flow across section boundaries — add transitions if needed
+- Verify total Chinese character count meets target (see depth adaptation table in html-reader-rules.md)
+
+**Step 8d — Inject base64 images (post-processing):**
+Run this Python script to convert all image references to base64 data URIs:
+
+```python
+import base64, re
+from pathlib import Path
+
+html_path = Path("deliverables/<YEAR>-<short_title>-reading.html")
+html = html_path.read_text(encoding="utf-8")
+
+def replace_img(match):
+    src = match.group(1)
+    # Resolve relative path from deliverables/ directory
+    img_path = (html_path.parent / src).resolve()
+    if not img_path.exists():
+        # Try from workspace root
+        img_path = Path(src.lstrip("../"))
+    if img_path.exists():
+        data = img_path.read_bytes()
+        b64 = base64.b64encode(data).decode()
+        suffix = img_path.suffix.lower()
+        mime = "image/jpeg" if suffix in (".jpg", ".jpeg") else "image/png"
+        return f'src="data:{mime};base64,{b64}"'
+    return match.group(0)  # Leave unchanged if file not found
+
+html = re.sub(r'src="([^"]*?/assets/figures/[^"]+)"', replace_img, html)
+html_path.write_text(html, encoding="utf-8")
+print(f"Done. File size: {html_path.stat().st_size / 1024:.0f} KB")
+```
+
+This separation ensures:
+- Agent writing context is 100% dedicated to content quality (no base64 noise)
+- Each section gets full 2000-3000 字 depth
+- Images are losslessly embedded after the writing is complete
+- Final HTML is still fully self-contained and portable
 
 This approach ensures:
 - Each section gets sufficient depth regardless of total paper length
