@@ -206,7 +206,7 @@ const mindmapData = {
   // Initial state: expand only root (level 0) children are visible but collapsed
   // Nothing in expanded set = only root's direct children shown, all collapsed
 
-  const LEVEL_X = [20, 210, 370, 520, 660]; // X positions per level (L0→L1 wider to avoid overlap)
+  const LEVEL_X = [20, 210, 340, 460, 580]; // L0→L1: 190, L1→L2: 130, L2→L3: 120, L3→L4: 120
   const V_GAP = 36; // Vertical gap between sibling nodes
   const GROUP_GAP = 20; // Extra vertical gap between different L1 branch groups
 
