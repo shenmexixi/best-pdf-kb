@@ -85,7 +85,7 @@ Save to: `output/review_science_editor.md`
 ## Execution Protocol
 
 1. Both agents run after Step 9 (technical verification) passes.
-2. Each agent reads: `deliverables/comprehensive_reader.html` + `kb/chunks.jsonl` + `kb/figures.jsonl`
+2. Each agent reads: `deliverables/<YEAR>-<short_title>-reading.html` + `kb/chunks.jsonl` + `kb/figures.jsonl`
 3. Each outputs structured review to `output/review_*.md`
 4. Collect all critical + major issues, deduplicate, apply fixes to HTML.
 5. After fixes, re-run Step 9 verification.

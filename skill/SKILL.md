@@ -67,7 +67,11 @@ All work must live under a single paper folder:
   README.md
 ```
 
-Final user-facing artifact: `deliverables/comprehensive_reader.html`
+Final user-facing artifact: `deliverables/<YEAR>-<short_title>-reading.html`
+
+Naming rule: `<YEAR>` is the paper's publication year, `<short_title>` is a concise lowercase kebab-case paper identifier (e.g., `eeg-inception`, `super-adhesive-hydrogels`). Examples:
+- `2021-eeg-inception-reading.html`
+- `2025-super-adhesive-hydrogels-reading.html`
 
 ## Core Workflow (Summary)
 

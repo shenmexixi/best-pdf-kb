@@ -12,7 +12,7 @@ Create the paper folder structure:
   assets/
     figures/      ← high-quality figure crops
     page_previews/← rendered pages (optional)
-  deliverables/   ← comprehensive_reader.html
+  deliverables/   ← <YEAR>-<short_title>-reading.html
   notes/          ← manual notes
   README.md
 ```
@@ -161,7 +161,7 @@ Follow `references/html-reader-rules.md` for the complete spec. Key points:
 6. Include TOC, meta-card, tech-cards, result-highlights as appropriate
 7. **Embed all images as base64 data URIs** — read each figure from `assets/figures/`, encode as base64, use `<img src="data:image/png;base64,...">`. The HTML must be fully self-contained (no external file references). This ensures it can be opened anywhere without broken images.
 
-Write to `deliverables/comprehensive_reader.html`.
+Write to `deliverables/<YEAR>-<short_title>-reading.html` (e.g., `2021-eeg-inception-reading.html`).
 
 ## Step 9: Technical Verification
 
@@ -189,7 +189,7 @@ Both produce structured issue lists. Auto-fix all critical + major issues, then 
 ## Step 11: Final Response
 
 Report:
-- Path to `deliverables/comprehensive_reader.html`
+- Path to `deliverables/<YEAR>-<short_title>-reading.html`
 - Path to `kb/`
 - Path to `kb/graph/`
 - Path to `assets/figures/figure_contact_sheet.png`

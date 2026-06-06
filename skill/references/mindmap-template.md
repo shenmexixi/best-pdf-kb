@@ -2,7 +2,7 @@
 
 ## Usage
 
-All comprehensive_reader.html files MUST use this exact mind map implementation for visual consistency. Only the `mindmapData` object content changes per paper.
+All `<YEAR>-<short_title>-reading.html` files MUST use this exact mind map implementation for visual consistency. Only the `mindmapData` object content changes per paper.
 
 ## Required HTML Structure
 

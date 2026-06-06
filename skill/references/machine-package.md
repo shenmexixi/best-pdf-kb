@@ -39,7 +39,7 @@
     page_previews/
       (optional rendered pages)
   deliverables/
-    comprehensive_reader.html
+    <YEAR>-<short_title>-reading.html
   notes/
     (manual notes)
   README.md

@@ -3,8 +3,11 @@
 ## Final Artifact
 
 ```text
-deliverables/comprehensive_reader.html
+deliverables/<YEAR>-<short_title>-reading.html
 ```
+
+Naming rule: `<YEAR>-<short_title>-reading.html` where `<YEAR>` is publication year and `<short_title>` is a concise lowercase kebab-case identifier.
+Examples: `2021-eeg-inception-reading.html`, `2025-super-adhesive-hydrogels-reading.html`
 
 One polished local HTML file. No external CDN dependencies.
 
