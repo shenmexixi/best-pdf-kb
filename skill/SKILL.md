@@ -19,12 +19,13 @@ Turn one academic PDF into two coordinated outputs:
 
 ## Prerequisites
 
-- **MinerU** (`magic-pdf`) installed and configured
-- **Python tools** (optional, for accelerated pipeline):
+- **MinerU** (`magic-pdf`) installed: `pip install magic-pdf`
+- **Python tools** included in this project under `tools/`:
   - `tools/pdf_figure_extractor/` — figure extraction + VLM analysis
   - `tools/pdf_text_summarizer/` — text summarization pipeline
   - `tools/pdf_knowledge_base/` — orchestrator
-  - Set `PDF_KB_TOOLS_PATH` env var to the tools parent directory
+  - Usage: `sys.path.insert(0, "<project_root>")` then `from tools.pdf_knowledge_base import build_knowledge_base`
+- **Python dependencies**: `pip install -r requirements.txt`
 - **API access** via environment variables:
   - `PDF_KB_API_KEY` — API key for VLM/LLM calls
   - `PDF_KB_BASE_URL` — API endpoint (OpenAI-compatible)

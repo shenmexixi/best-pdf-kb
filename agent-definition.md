@@ -30,7 +30,8 @@ The following environment variables configure the skill:
 - `PDF_KB_API_KEY` — API key for VLM/LLM calls
 - `PDF_KB_BASE_URL` — API endpoint (OpenAI-compatible)
 - `PDF_KB_MODEL` — model name
-- `PDF_KB_TOOLS_PATH` — (optional) path to Python tools directory for accelerated pipeline
+
+Python tools are included in the project under `tools/`. To use the accelerated Python pipeline, add the project root to sys.path.
 
 ## Usage
 

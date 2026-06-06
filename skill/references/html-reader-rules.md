@@ -60,6 +60,31 @@ Keep TOC to these top-level sections only. Nest figures under relevant section.
 - Discussion connects back to earlier findings with explicit references
 - No orphaned conclusions — every claim needs visible reasoning chain
 
+## Long Document Adaptive Writing Strategy
+
+The HTML reader must maintain quality regardless of paper length. Do NOT generate the entire HTML in one pass.
+
+### Process:
+1. **Outline first**: Generate a structured outline with 7 sections, key points per section, and figure assignments
+2. **Write section by section**: Each section generated independently (2000-3000 Chinese characters)
+3. **Assemble**: Concatenate sections, add header/footer/TOC/mind map
+4. **Verify coherence**: Check transitions between sections, fix any gaps
+
+### Depth adaptation by paper length:
+| Paper length | Sections | Per-section depth | Total HTML |
+|:---:|:---:|------|------|
+| ≤15 pages | 5-6 sections | 1500-2000 字 | ~10K 字 |
+| 15-30 pages | 6-7 sections | 2000-3000 字 | ~15K 字 |
+| 30-60 pages | 7 sections | 2500-3500 字 | ~20K 字 |
+| 60+ pages | 7 sections | 3000-4000 字 | ~25K 字 |
+
+### Key rules for long papers:
+- Never sacrifice depth for brevity — if a paper has 8 experiments, cover all 8
+- Group related experiments under logical subsections rather than listing all sequentially
+- Use more tech-cards and result-highlights for dense content
+- Mind map may have more leaves per branch (5-6 instead of 3-4)
+- Terms glossary should be comprehensive (15-25 terms)
+
 ## Figure Block Structure
 
 Every figure MUST be embedded as base64 data URI so the HTML is fully self-contained and portable. Do NOT use external file paths.

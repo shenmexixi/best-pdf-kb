@@ -61,6 +61,21 @@ For each chunk, produce:
 - `linked_tables`: table IDs referenced
 - `source_confidence`: high/medium/low
 
+### Long Section Handling
+
+If a section exceeds ~2500 characters:
+1. Split into overlapping chunks (~2500 chars each, 200 chars overlap) at paragraph boundaries
+2. Summarize each chunk independently
+3. Merge chunk summaries into one coherent section summary
+4. This ensures no content is silently truncated
+
+### Long Paper Overall Summary
+
+If all section summaries combined exceed ~6000 characters (typically 30+ sections):
+1. Group sections into batches of 6
+2. Summarize each batch to ~200 characters
+3. Feed condensed batch summaries to the final overall summary prompt
+
 Then generate multi-level overall summary:
 - `one_liner`: one sentence
 - `abstract_summary`: 3-5 sentences
@@ -160,6 +175,36 @@ Follow `references/html-reader-rules.md` for the complete spec. Key points:
 5. Apply the style preset (academic/technical/popular) to tone and depth
 6. Include TOC, meta-card, tech-cards, result-highlights as appropriate
 7. **Embed all images as base64 data URIs** — read each figure from `assets/figures/`, encode as base64, use `<img src="data:image/png;base64,...">`. The HTML must be fully self-contained (no external file references). This ensures it can be opened anywhere without broken images.
+
+### Adaptive Writing Strategy (长文档自适应)
+
+Do NOT generate the entire HTML in one pass. Use a structured multi-step approach:
+
+**Step 8a — Generate outline:**
+Based on KB data (chunks, figures, terms), produce a 7-section outline with:
+- Section title
+- Key points to cover (3-5 per section)
+- Which figures belong to this section
+- Target word count per section (total adapts to paper length)
+
+**Step 8b — Write section by section:**
+For each section in the outline:
+- Generate HTML content for that section only (2000-3000 Chinese characters)
+- Include relevant figure-blocks with base64-embedded images
+- Ensure the section opens with a bridge sentence from the previous section
+- Apply style preset tone rules
+
+**Step 8c — Assemble and verify coherence:**
+- Concatenate all sections into the full HTML
+- Add header (meta-card, TOC) and footer
+- Embed mind map JS from template
+- Verify narrative flow across section boundaries — add transitions if needed
+
+This approach ensures:
+- Each section gets sufficient depth regardless of total paper length
+- No single LLM call is overwhelmed by input length
+- Section-level generation allows retrying individual sections without regenerating everything
+- Long papers (40+ pages) and short papers (10 pages) both get appropriate coverage
 
 Write to `deliverables/<YEAR>-<short_title>-reading.html` (e.g., `2021-eeg-inception-reading.html`).
 
