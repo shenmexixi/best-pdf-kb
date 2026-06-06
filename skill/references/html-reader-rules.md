@@ -176,20 +176,72 @@ Recommended 6 branches:
 - No decorative/marketing backgrounds
 - All text fits inside containers (no overflow)
 
-## Component Library
+## Component Library (MANDATORY visual variety)
 
-Use these CSS classes:
+The HTML must use colored blocks and visual differentiation to break up prose and highlight key information. A good reader uses at minimum: 4+ tech-cards, 3+ result-highlights, and colored explanation blocks.
 
-| Class | Purpose |
-|-------|---------|
-| `.meta-card` | Paper identity block |
-| `.toc` | Table of contents |
-| `.figure-block` | Figure + captions + explanation |
-| `.tech-card` | Technical mechanism explanation |
-| `.result-highlight` | Key quantitative result |
-| `.formula` | Math formula display |
-| `table` | Data comparison tables |
-| `.mindmap-container` | Mind map wrapper |
+### Required CSS:
+
+```css
+:root {
+  --primary: #2c5282;
+  --secondary: #4a90d9;
+  --accent: #e53e3e;
+  --bg: #f7fafc;
+  --card-bg: #ffffff;
+  --text: #1a202c;
+  --text-muted: #4a5568;
+  --border: #e2e8f0;
+}
+
+.meta-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; margin-bottom: 1.5rem; }
+.toc { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+.figure-block { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin: 1.5rem 0; }
+.figure-block .explanation { background: #f8f9fa; border-left: 3px solid var(--secondary); padding: 0.8rem 1rem; margin-top: 0.8rem; font-size: 0.9rem; line-height: 1.7; }
+.tech-card { background: #f0f7ff; border: 1px solid #bee3f8; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+.tech-card h4 { color: var(--primary); margin-top: 0; margin-bottom: 0.5rem; }
+.result-highlight { background: #fef9e7; border-left: 4px solid #f6ad55; padding: 0.8rem 1rem; margin: 1rem 0; border-radius: 0 6px 6px 0; }
+.summary-box { background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 6px; padding: 1rem; margin: 1rem 0; }
+.formula { background: #f5f5f5; border: 1px solid var(--border); border-radius: 4px; padding: 0.6rem 1rem; margin: 0.8rem 0; font-family: monospace; text-align: center; }
+```
+
+### Component usage rules:
+
+| Class | Color | When to use | Minimum count |
+|-------|-------|-------------|:---:|
+| `.meta-card` | White | Paper identity (title, authors, DOI, summary) | 1 |
+| `.tech-card` | Light blue `#f0f7ff` | Each core technical mechanism/design choice | 4+ |
+| `.result-highlight` | Light yellow `#fef9e7` | Key quantitative results (accuracy, speedup, etc.) | 3+ |
+| `.summary-box` | Light green `#f0fff4` | Section takeaways, key conclusions | 2+ |
+| `.figure-block .explanation` | Grey `#f8f9fa` + blue left border | Figure panel explanations | per figure |
+| `.formula` | Grey `#f5f5f5` | Mathematical formulas or key equations | as needed |
+| `.toc` | White | Table of contents | 1 |
+
+### Example usage patterns:
+
+**Tech-card** — one per major design choice:
+```html
+<div class="tech-card">
+  <h4>多尺度并行卷积设计动机</h4>
+  <p><strong>问题:</strong> EEG信号非平稳，单一时间窗口无法捕获全部频率特征。</p>
+  <p><strong>方案:</strong> 并行使用25/75/125卷积核，对应250Hz下0.1s/0.3s/0.5s时间窗口。</p>
+  <p><strong>效果:</strong> 同时提取theta/alpha/beta节律特征。</p>
+</div>
+```
+
+**Result-highlight** — one per key finding:
+```html
+<div class="result-highlight">
+  <p><strong>核心发现:</strong> 四分类准确率达88.39%，跨被试标准差仅7.1（较HS-CNN降低58%），单样本推理0.0215秒。</p>
+</div>
+```
+
+**Summary-box** — section-end takeaway:
+```html
+<div class="summary-box">
+  <p><strong>本节要点:</strong> EEG-inception通过物理采样率绑定的多尺度卷积核 + 残差模块，实现了端到端特征提取，无需人工预处理。</p>
+</div>
+```
 
 ## HTML Template Structure
 
