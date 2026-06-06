@@ -206,9 +206,11 @@ const mindmapData = {
   // Initial state: expand only root (level 0) children are visible but collapsed
   // Nothing in expanded set = only root's direct children shown, all collapsed
 
-  const LEVEL_X = [20, 210, 340, 460, 580]; // L0→L1: 190, L1→L2: 130, L2→L3: 120, L3→L4: 120
   const V_GAP = 36; // Vertical gap between sibling nodes
   const GROUP_GAP = 20; // Extra vertical gap between different L1 branch groups
+  // X offset per level is now dynamic: each node starts after parent's right edge + gap
+  const LEVEL_GAP = [0, 190, 30, 30, 30]; // gap AFTER parent node's right edge per level transition
+  const BASE_X = 20; // Root starts here
 
   function render() {
     const canvas = document.getElementById('mindmap-canvas');
@@ -218,7 +220,13 @@ const mindmapData = {
     canvas.appendChild(svg);
 
     const layout = computeLayout(mindmapData, '0', 0);
-    drawNode(canvas, svg, layout);
+    assignY(layout, 20);
+    // Pass 1: place nodes to get actual widths
+    placeNodes(canvas, layout);
+    // Pass 2: compute dynamic X based on actual widths, then reposition + draw lines
+    computeDynamicX(layout, BASE_X);
+    repositionNodes(canvas, layout);
+    drawLines(svg, layout);
 
     const bounds = getBounds(layout);
     canvas.style.height = (bounds.maxY + 60) + 'px';
@@ -235,11 +243,13 @@ const mindmapData = {
       text: node.text,
       path: path,
       level: level,
-      x: LEVEL_X[Math.min(level, LEVEL_X.length - 1)],
-      y: 0, // computed later
+      x: 0,
+      y: 0,
+      w: 0, // will be set after DOM placement
       hasChildren: hasKids,
       expanded: isExpanded,
-      children: []
+      children: [],
+      el: null
     };
 
     if (hasKids && isExpanded) {
@@ -258,34 +268,24 @@ const mindmapData = {
     }
     let y = startY;
     node.children.forEach(function(child, idx) {
-      // Add extra gap between L1 branch groups (not before first)
       if (node.level === 0 && idx > 0) { y += GROUP_GAP; }
       y = assignY(child, y);
     });
-    // Center parent among children
     node.y = (node.children[0].y + node.children[node.children.length - 1].y) / 2;
     return y;
   }
 
-  function getBounds(node) {
-    let maxX = node.x + 160, maxY = node.y + 30;
-    node.children.forEach(function(child) {
-      const b = getBounds(child);
-      maxX = Math.max(maxX, b.maxX);
-      maxY = Math.max(maxY, b.maxY);
-    });
-    return { maxX: maxX, maxY: maxY };
-  }
-
-  function drawNode(canvas, svg, node) {
+  // Pass 1: create DOM elements to measure width
+  function placeNodes(canvas, node) {
     const el = document.createElement('div');
     el.className = 'mm-node L' + Math.min(node.level, 4);
     if (node.hasChildren) {
       el.classList.add('has-children');
       el.classList.add(node.expanded ? 'expanded' : 'collapsed');
     }
-    el.style.left = node.x + 'px';
-    el.style.top = node.y + 'px';
+    el.style.left = '0px';
+    el.style.top = '0px';
+    el.style.visibility = 'hidden';
     el.textContent = node.text;
     el.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -296,11 +296,48 @@ const mindmapData = {
       }
     });
     canvas.appendChild(el);
+    node.el = el;
+    node.w = el.offsetWidth;
+    node.children.forEach(function(child) { placeNodes(canvas, child); });
+  }
 
+  // Compute X dynamically: child.x = parent.x + parent.w + LEVEL_GAP[child.level]
+  function computeDynamicX(node, x) {
+    node.x = x;
+    var childX = x + node.w + (LEVEL_GAP[Math.min(node.level + 1, LEVEL_GAP.length - 1)]);
     node.children.forEach(function(child) {
-      drawLine(svg, node.x + 140, node.y + 14, child.x, child.y + 14);
-      drawNode(canvas, svg, child);
+      computeDynamicX(child, childX);
     });
+  }
+
+  // Pass 2: reposition nodes with correct X/Y
+  function repositionNodes(canvas, node) {
+    node.el.style.left = node.x + 'px';
+    node.el.style.top = node.y + 'px';
+    node.el.style.visibility = 'visible';
+    node.children.forEach(function(child) { repositionNodes(canvas, child); });
+  }
+
+  // Draw lines using actual node positions and widths
+  function drawLines(svg, node) {
+    node.children.forEach(function(child) {
+      var x1 = node.x + node.w + 4; // right edge of parent + small gap
+      var y1 = node.y + 14;
+      var x2 = child.x;             // left edge of child
+      var y2 = child.y + 14;
+      drawLine(svg, x1, y1, x2, y2);
+      drawLines(svg, child);
+    });
+  }
+
+  function getBounds(node) {
+    let maxX = node.x + node.w + 20, maxY = node.y + 30;
+    node.children.forEach(function(child) {
+      const b = getBounds(child);
+      maxX = Math.max(maxX, b.maxX);
+      maxY = Math.max(maxY, b.maxY);
+    });
+    return { maxX: maxX, maxY: maxY };
   }
 
   function drawLine(svg, x1, y1, x2, y2) {
@@ -351,24 +388,6 @@ const mindmapData = {
   });
 
   // Initial render
-  var layout = computeLayout(mindmapData, '0', 0);
-  assignY(layout, 20);
-  render = function() {
-    var layout = computeLayout(mindmapData, '0', 0);
-    assignY(layout, 20);
-    var canvas = document.getElementById('mindmap-canvas');
-    canvas.innerHTML = '';
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.classList.add('mm-lines');
-    canvas.appendChild(svg);
-    drawNode(canvas, svg, layout);
-    var bounds = getBounds(layout);
-    canvas.style.height = (bounds.maxY + 60) + 'px';
-    canvas.style.width = Math.max(900, bounds.maxX + 60) + 'px';
-    svg.setAttribute('width', canvas.style.width);
-    svg.setAttribute('height', canvas.style.height);
-    canvas.style.transform = 'scale(' + scale + ') translate(' + panX + 'px,' + panY + 'px)';
-  };
   render();
 })();
 ```
