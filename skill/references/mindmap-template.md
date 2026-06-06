@@ -91,7 +91,7 @@ const mindmapData = {
   border-color: var(--primary);
 }
 .mindmap-viewport {
-  overflow: hidden;
+  overflow: auto;
   border-radius: 6px;
   background: white;
   border: 1px solid var(--border);
@@ -111,19 +111,15 @@ const mindmapData = {
 .mm-node {
   position: absolute;
   border-radius: 6px;
-  padding: 0.45rem 0.8rem;
+  padding: 0.35rem 0.7rem;
   font-size: 0.78rem;
-  max-width: 220px;
-  min-height: 1.6em;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+  max-width: none;
+  word-wrap: normal;
+  white-space: nowrap;
   cursor: pointer;
   user-select: none;
-  line-height: 1.5;
+  line-height: 1.4;
   transition: box-shadow 0.2s, transform 0.15s;
-  white-space: normal;
-  display: flex;
-  align-items: center;
 }
 .mm-node:hover {
   box-shadow: 0 3px 12px rgba(0,0,0,0.15);
@@ -210,8 +206,8 @@ const mindmapData = {
   // Initial state: expand only root (level 0) children are visible but collapsed
   // Nothing in expanded set = only root's direct children shown, all collapsed
 
-  const LEVEL_X = [30, 240, 450, 650, 820]; // X positions per level
-  const V_GAP = 44; // Vertical gap between sibling nodes (enough for 2-line text)
+  const LEVEL_X = [20, 180, 340, 500, 650]; // X positions per level (compact horizontal)
+  const V_GAP = 36; // Vertical gap between sibling nodes
 
   function render() {
     const canvas = document.getElementById('mindmap-canvas');
@@ -269,7 +265,7 @@ const mindmapData = {
   }
 
   function getBounds(node) {
-    let maxX = node.x + 200, maxY = node.y + 30;
+    let maxX = node.x + 160, maxY = node.y + 30;
     node.children.forEach(function(child) {
       const b = getBounds(child);
       maxX = Math.max(maxX, b.maxX);
@@ -299,7 +295,7 @@ const mindmapData = {
     canvas.appendChild(el);
 
     node.children.forEach(function(child) {
-      drawLine(svg, node.x + 180, node.y + 14, child.x, child.y + 14);
+      drawLine(svg, node.x + 140, node.y + 14, child.x, child.y + 14);
       drawNode(canvas, svg, child);
     });
   }
