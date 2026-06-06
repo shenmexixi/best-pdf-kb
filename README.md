@@ -1,41 +1,36 @@
 # Best PDF Knowledge Base Builder
 
-A Claude Code skill that transforms academic PDFs into structured knowledge bases + polished interactive Chinese HTML readers.
+A Claude Code skill that transforms academic PDFs into structured knowledge bases + polished interactive Chinese HTML readers. Self-contained — all Python tools included.
 
 ## What It Does
 
 Given a PDF paper, produces:
 - **Machine-readable KB**: text chunks with provenance, figure analysis, terminology, knowledge graph, SQLite index
-- **Human-facing HTML**: interactive mind map, inline figure explanations, academic styling, dual-reviewer quality check
+- **Human-facing HTML**: self-contained (base64 images), interactive mind map, inline figure explanations, academic styling, dual-reviewer quality check
 
 ## Quick Start
 
-### 1. Install the skill
-
-Copy the skill directory to your Claude Code skills folder:
+### 1. Clone and install
 
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/best-pdf-kb.git
-
-# Copy to Claude Code skills directory
-cp -r best-pdf-kb/skill ~/.claude/skills/best-pdf-kb
+git clone https://github.com/shenmexixi/best-pdf-kb.git
+cd best-pdf-kb
+pip install -r requirements.txt
 ```
 
-Or register as an agent:
+### 2. Register as Claude Code agent
+
 ```bash
-cp best-pdf-kb/agent-definition.md ~/.claude/agents/best-pdf-kb.md
+cp agent-definition.md ~/.claude/agents/best-pdf-kb.md
+# Edit paths in the file to match your local clone location
 ```
 
-Then edit the paths in `~/.claude/agents/best-pdf-kb.md` to match your local setup.
+Or as a skill:
+```bash
+cp -r skill ~/.claude/skills/best-pdf-kb
+```
 
-### 2. Install dependencies
-
-- **MinerU** (`magic-pdf`): Follow [MinerU installation guide](https://github.com/opendatalab/MinerU)
-- **Python packages**: `pymupdf`, `networkx`, `rdflib` (for graph exports)
-- **API access**: Any OpenAI-compatible API endpoint (Gemini, Claude, etc.)
-
-### 3. Configure environment variables
+### 3. Configure API access
 
 ```bash
 export PDF_KB_API_KEY="your-api-key"
@@ -72,8 +67,15 @@ workspace/
 │   └── graph/          # Knowledge graph (JSONL + SQLite + GraphML + RDF)
 ├── assets/figures/     # High-quality figure crops
 └── deliverables/
-    └── comprehensive_reader.html  # Interactive HTML reader
+    └── 2021-eeg-inception-reading.html  # Self-contained HTML (base64 images)
 ```
+
+## Key Features
+
+- **Self-contained HTML**: All images base64-embedded, works anywhere without external files
+- **Long document adaptive**: Sectional generation ensures depth for 10-page and 60-page papers alike
+- **Style presets**: academic / technical / popular — controls tone, depth, and presentation
+- **Python tools included**: `tools/` directory has the full pipeline (no external deps needed)
 
 ## Style Presets
 
@@ -86,13 +88,14 @@ workspace/
 ## How It Works
 
 1. Parse PDF with MinerU (fallback: pymupdf + 300 DPI rendering)
-2. Split text into section-aware chunks with provenance
+2. Split text into section-aware chunks with provenance (adaptive chunking for long sections)
 3. Extract figures with VLM analysis + panel splitting
 4. Build structured KB (chunks, figures, tables, terms, SQLite)
 5. Construct dual-layer knowledge graph (source + semantic)
-6. Generate interactive HTML reader with fixed mind map template
-7. Run dual-reviewer quality check (Domain Expert + Science Editor)
-8. Auto-fix issues and verify
+6. Generate HTML reader section-by-section (outline → write → assemble → verify)
+7. Embed all images as base64 for portability
+8. Run dual-reviewer quality check (Domain Expert + Science Editor)
+9. Auto-fix issues and verify
 
 ## Quality
 
@@ -104,6 +107,19 @@ Evaluated on a 110-point rubric across 5 dimensions:
 - Review & revision quality (10 pts)
 
 **Score: 104/110 (94.5%)** — tested on JNE and Nature papers.
+
+## Project Structure
+
+```
+best-pdf-kb/
+├── skill/              # Skill definition + references (for Claude Code)
+├── tools/              # Python pipeline (figure extraction, summarization, KB builder)
+├── agent-definition.md # Claude Code agent registration template
+├── requirements.txt    # Python dependencies
+├── docs/               # Installation guide + troubleshooting
+├── README.md
+└── LICENSE (MIT)
+```
 
 ## Requirements
 
