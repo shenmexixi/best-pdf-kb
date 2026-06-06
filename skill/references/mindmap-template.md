@@ -206,8 +206,9 @@ const mindmapData = {
   // Initial state: expand only root (level 0) children are visible but collapsed
   // Nothing in expanded set = only root's direct children shown, all collapsed
 
-  const LEVEL_X = [20, 180, 340, 500, 650]; // X positions per level (compact horizontal)
+  const LEVEL_X = [20, 210, 370, 520, 660]; // X positions per level (L0→L1 wider to avoid overlap)
   const V_GAP = 36; // Vertical gap between sibling nodes
+  const GROUP_GAP = 20; // Extra vertical gap between different L1 branch groups
 
   function render() {
     const canvas = document.getElementById('mindmap-canvas');
@@ -249,14 +250,16 @@ const mindmapData = {
     return result;
   }
 
-  // Assign Y positions recursively
+  // Assign Y positions recursively with group gaps at L1
   function assignY(node, startY) {
     if (node.children.length === 0) {
       node.y = startY;
       return startY + V_GAP;
     }
     let y = startY;
-    node.children.forEach(function(child) {
+    node.children.forEach(function(child, idx) {
+      // Add extra gap between L1 branch groups (not before first)
+      if (node.level === 0 && idx > 0) { y += GROUP_GAP; }
       y = assignY(child, y);
     });
     // Center parent among children
