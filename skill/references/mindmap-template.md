@@ -72,6 +72,8 @@ const mindmapData = {
   gap: 0.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
 }
 .mindmap-controls button {
   padding: 0.35rem 0.8rem;
@@ -94,10 +96,14 @@ const mindmapData = {
   background: white;
   border: 1px solid var(--border);
   position: relative;
+  height: 460px;
+  z-index: 1;
 }
 #mindmap-canvas {
   min-height: 450px;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   cursor: grab;
   transform-origin: 0 0;
 }
