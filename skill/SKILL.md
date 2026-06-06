@@ -89,7 +89,7 @@ See `references/workflow.md` for full step-by-step detail.
 
 - Never fabricate data, figure captions, or numeric claims
 - Every chunk/node/edge must have provenance (page_id, chunk_id)
-- All `<img src>` paths must resolve to existing files
+- **All images in HTML must be embedded as base64 data URIs** — the HTML file must be fully self-contained, openable anywhere without external dependencies
 - Mind map uses the EXACT template from `references/mindmap-template.md`
 - HTML has 5-7 top-level sections, not flat headings
 - Figures nested under relevant section, not a standalone gallery

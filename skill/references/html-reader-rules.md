@@ -59,11 +59,13 @@ Keep TOC to these top-level sections only. Nest figures under relevant section.
 
 ## Figure Block Structure
 
-Every figure MUST have:
+Every figure MUST be embedded as base64 data URI so the HTML is fully self-contained and portable. Do NOT use external file paths.
+
+**Embedding method:** Read each figure image file, convert to base64, and embed as `data:image/png;base64,...` (or `data:image/jpeg;base64,...`).
 
 ```html
 <div class="figure-block">
-  <img src="../assets/figures/figure_XX.png" alt="[Figure label]">
+  <img src="data:image/png;base64,iVBORw0KGgo..." alt="[Figure label]">
   <p class="caption">[Original English caption]</p>
   <p class="caption-zh">[Chinese caption]</p>
   <div class="explanation">
@@ -73,6 +75,31 @@ Every figure MUST have:
   </div>
 </div>
 ```
+
+**How to embed (Python):**
+```python
+import base64
+from pathlib import Path
+
+def embed_image(image_path: str) -> str:
+    data = Path(image_path).read_bytes()
+    b64 = base64.b64encode(data).decode()
+    suffix = Path(image_path).suffix.lower()
+    mime = "image/jpeg" if suffix in (".jpg", ".jpeg") else "image/png"
+    return f"data:{mime};base64,{b64}"
+```
+
+**How to embed (Bash):**
+```bash
+# Read image, convert to base64, output data URI
+echo "data:image/png;base64,$(base64 -w0 assets/figures/figure_01.png)"
+```
+
+**CRITICAL RULES:**
+- NEVER use `<img src="../assets/figures/...">` or any file path in the final HTML
+- EVERY `<img>` tag must use a `data:` URI
+- The `assets/figures/` directory still stores the original crops for KB use, but the HTML must not reference them
+- This ensures the HTML can be opened anywhere — emailed, uploaded, moved to another machine — without broken images
 
 For multi-panel figures, explain each panel separately:
 - Panel (a): ...
@@ -152,7 +179,7 @@ Use these CSS classes:
   <!-- Section 7: Summary -->
   ...
 
-  <footer>图片来源: 本地提取的论文figure资源</footer>
+  <footer>图片已内嵌为base64，本文件完全自包含，可独立打开。</footer>
 
   <script>
     // Mind map JS (from template)
@@ -164,10 +191,11 @@ Use these CSS classes:
 ## Verification Checklist (before delivery)
 
 - [ ] No `????` or Unicode replacement characters
-- [ ] All image paths exist
+- [ ] All images embedded as base64 data URIs (no external file paths)
+- [ ] Every paper figure has a corresponding `<img>` tag with embedded data
 - [ ] JavaScript passes syntax check (balanced braces/parens)
 - [ ] TOC has only top-level sections (5-7)
-- [ ] Every paper figure has a corresponding `<img>` tag
 - [ ] Mind map canvas supports drag and zoom
 - [ ] No "beginner" labels unless user requested
 - [ ] Responsive layout works at different widths
+- [ ] HTML file is fully self-contained (opens correctly when moved to any location)

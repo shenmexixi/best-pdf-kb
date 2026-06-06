@@ -159,7 +159,7 @@ Follow `references/html-reader-rules.md` for the complete spec. Key points:
 4. Every figure gets a figure-block (image + original caption + Chinese caption + explanation)
 5. Apply the style preset (academic/technical/popular) to tone and depth
 6. Include TOC, meta-card, tech-cards, result-highlights as appropriate
-7. Ensure all `<img src>` paths are relative to the deliverables/ directory
+7. **Embed all images as base64 data URIs** — read each figure from `assets/figures/`, encode as base64, use `<img src="data:image/png;base64,...">`. The HTML must be fully self-contained (no external file references). This ensures it can be opened anywhere without broken images.
 
 Write to `deliverables/comprehensive_reader.html`.
 
@@ -167,7 +167,7 @@ Write to `deliverables/comprehensive_reader.html`.
 
 Check:
 - [ ] HTML file exists and is valid
-- [ ] All `<img src>` paths resolve to existing files
+- [ ] All `<img>` tags use base64 data URIs (no external file paths)
 - [ ] At least 1 `<img>` per paper figure
 - [ ] All JSON/JSONL files parse
 - [ ] SQLite databases open
