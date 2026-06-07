@@ -232,6 +232,32 @@ html_path.write_text(html, encoding="utf-8")
 print(f"Done. File size: {html_path.stat().st_size / 1024:.0f} KB")
 ```
 
+**Step 8e — Encoding and symbol validation (post-processing):**
+Run this script to detect and report encoding issues:
+
+```python
+import re
+from pathlib import Path
+
+html_path = Path("deliverables/<YEAR>-<short_title>-reading.html")
+html = html_path.read_text(encoding="utf-8")
+
+# Check for garbled sequences (bytes 0x80-0xFF that aren't valid Chinese)
+text = re.sub(r'<script.*?</script>', '', html, flags=re.DOTALL)
+text = re.sub(r'<style.*?</style>', '', text, flags=re.DOTALL)
+clean = re.sub(r'<[^>]+>', '', text)
+
+# Detect garbled: Chinese char followed by Latin-1 range bytes
+garbled = re.findall(r'[\u4e00-\u9fff][\u0080-\u00ff]+[\u4e00-\u9fff]', clean)
+if garbled:
+    print(f"WARNING: {len(garbled)} garbled sequences detected!")
+    print("The HTML has encoding damage. Regenerate affected sections.")
+else:
+    print("Encoding OK — no garbled sequences.")
+```
+
+If encoding issues are detected, the affected section must be regenerated.
+
 This separation ensures:
 - Agent writing context is 100% dedicated to content quality (no base64 noise)
 - Each section gets full 2000-3000 字 depth

@@ -51,6 +51,50 @@ Keep TOC to these top-level sections only. Nest figures under relevant section.
 
 **popular:** Lead with intuition and analogy before technical detail, minimize jargon on first mention (explain inline), use progressive disclosure (simple→complex), more "why this matters" framing.
 
+## Symbol and Encoding Rules (MANDATORY)
+
+The HTML must display all symbols correctly. Follow these rules strictly:
+
+### Mathematical symbols — use Unicode characters directly:
+| Instead of | Use | Unicode |
+|-----------|-----|---------|
+| `>=` | ≥ | U+2265 |
+| `<=` | ≤ | U+2264 |
+| `!=` | ≠ | U+2260 |
+| `~=` | ≈ | U+2248 |
+| `+-` | ± | U+00B1 |
+| `*` (multiply) | × | U+00D7 |
+| `->` | → | U+2192 |
+| `<-` | ← | U+2190 |
+| `inf` | ∞ | U+221E |
+| `sqrt` | √ | U+221A |
+| `sum` | Σ | U+03A3 |
+| `delta` | Δ/δ | U+0394/U+03B4 |
+| `alpha` | α | U+03B1 |
+| `beta` | β | U+03B2 |
+| `theta` | θ | U+03B8 |
+| `sigma` | σ | U+03C3 |
+| `mu` | μ | U+03BC |
+
+### Subscripts and superscripts — use HTML tags:
+```html
+x<sub>i</sub>     <!-- subscript: xᵢ -->
+x<sup>2</sup>     <!-- superscript: x² -->
+10<sup>-3</sup>   <!-- scientific: 10⁻³ -->
+```
+
+### Formulas — wrap in `.formula` class:
+```html
+<div class="formula">S<sub>aug</sub>(i) = S<sub>0</sub>(i) − S<sub>n</sub>(i) + S<sub>n</sub>(k)</div>
+```
+
+### Encoding safety:
+- ALL HTML files MUST be written as UTF-8 with BOM (`\xEF\xBB\xBF` at start) or with `<meta charset="UTF-8">`
+- When writing files with Python, ALWAYS use `encoding="utf-8"`: `Path(f).write_text(html, encoding="utf-8")`
+- NEVER mix `print()` redirection for file writing on Windows (codepage corruption risk)
+- After writing, run Step 8e encoding validation to detect garbled sequences
+- If garbled text is found, regenerate that section — do NOT try to fix byte-by-byte
+
 ## Narrative Coherence (MANDATORY)
 
 - Each top-level section opens with 1-2 sentence bridge from previous section
