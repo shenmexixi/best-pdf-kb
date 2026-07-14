@@ -203,34 +203,22 @@ For each section in the outline:
 - Verify total Chinese character count meets target (see depth adaptation table in html-reader-rules.md)
 
 **Step 8d — Inject base64 images (post-processing):**
-Run this Python script to convert all image references to base64 data URIs:
+Run the bundled deterministic packager after the relative-path HTML is complete. The source and target may be the same file:
 
-```python
-import base64, re
-from pathlib import Path
-
-html_path = Path("deliverables/<YEAR>-<short_title>-reading.html")
-html = html_path.read_text(encoding="utf-8")
-
-def replace_img(match):
-    src = match.group(1)
-    # Resolve relative path from deliverables/ directory
-    img_path = (html_path.parent / src).resolve()
-    if not img_path.exists():
-        # Try from workspace root
-        img_path = Path(src.lstrip("../"))
-    if img_path.exists():
-        data = img_path.read_bytes()
-        b64 = base64.b64encode(data).decode()
-        suffix = img_path.suffix.lower()
-        mime = "image/jpeg" if suffix in (".jpg", ".jpeg") else "image/png"
-        return f'src="data:{mime};base64,{b64}"'
-    return match.group(0)  # Leave unchanged if file not found
-
-html = re.sub(r'src="([^"]*?/assets/figures/[^"]+)"', replace_img, html)
-html_path.write_text(html, encoding="utf-8")
-print(f"Done. File size: {html_path.stat().st_size / 1024:.0f} KB")
+```bash
+python <skill-dir>/scripts/embed_html_images.py \
+  deliverables/<YEAR>-<short_title>-reading.html \
+  deliverables/<YEAR>-<short_title>-reading.html
 ```
+
+The packager resolves paths relative to the source HTML, preserves existing data URIs, selects the MIME type from each image suffix, and writes UTF-8. It fails without writing the target when a local image is missing or an `<img>` points to an external URL. Do not replace this command with an ad hoc embedding snippet.
+
+After packaging, verify:
+
+- Every `<img src>` starts with `data:image/`
+- Decoding each data URI reproduces the source image bytes
+- No local or external image URL remains
+- The HTML opens after being moved away from `assets/`
 
 **Step 8e — Encoding and symbol validation (post-processing):**
 Run this script to detect and report encoding issues:

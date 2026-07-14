@@ -161,24 +161,14 @@ This two-phase approach ensures:
 - No base64 noise competes with the writing task
 - Final HTML is still fully self-contained and portable
 
-**How to embed (Python):**
-```python
-import base64
-from pathlib import Path
-
-def embed_image(image_path: str) -> str:
-    data = Path(image_path).read_bytes()
-    b64 = base64.b64encode(data).decode()
-    suffix = Path(image_path).suffix.lower()
-    mime = "image/jpeg" if suffix in (".jpg", ".jpeg") else "image/png"
-    return f"data:{mime};base64,{b64}"
-```
-
-**How to embed (Bash):**
+**How to package:**
 ```bash
-# Read image, convert to base64, output data URI
-echo "data:image/png;base64,$(base64 -w0 assets/figures/figure_01.png)"
+python <skill-dir>/scripts/embed_html_images.py \
+  deliverables/<YEAR>-<short_title>-reading.html \
+  deliverables/<YEAR>-<short_title>-reading.html
 ```
+
+Use the bundled script; do not rewrite the embedding logic. It validates all image references before writing, supports in-place packaging, and preserves the exact source image bytes.
 
 **CRITICAL RULES:**
 - NEVER use `<img src="../assets/figures/...">` or any file path in the final HTML

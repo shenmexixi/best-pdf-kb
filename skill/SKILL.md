@@ -1,11 +1,9 @@
 ---
 name: best-pdf-kb
 description: >
-  Build a complete paper knowledge base + polished Chinese interactive HTML reader
-  from an academic PDF. Combines MinerU parsing, VLM figure analysis, knowledge
-  graph construction, and dual-reviewer quality check. Outputs machine-readable KB
-  (chunks, figures, tables, terms, graph, SQLite) and one deliverable HTML reader
-  with interactive mind map. Supports style presets (academic/technical/popular).
+  Use when Codex needs to turn an academic PDF into a complete paper knowledge
+  base and polished Chinese interactive HTML reader, or package an existing paper
+  reader as a portable single-file HTML with embedded images.
 ---
 
 # Best PDF Knowledge Base Builder
@@ -41,6 +39,10 @@ Read these files as needed during execution:
 - `references/mindmap-template.md` — EXACT mind map JS/CSS template (use verbatim)
 - `references/review-agents.md` — dual-reviewer protocol (Domain Expert + Science Editor)
 - `references/style-presets.md` — tone/depth customization options
+
+Use this bundled tool instead of rewriting image-embedding code:
+
+- `scripts/embed_html_images.py` — convert every local `<img>` reference into a base64 data URI and produce a portable HTML file
 
 ## Style Presets
 
@@ -94,7 +96,7 @@ See `references/workflow.md` for full step-by-step detail.
 
 - Never fabricate data, figure captions, or numeric claims
 - Every chunk/node/edge must have provenance (page_id, chunk_id)
-- **HTML must be self-contained** — after Step 8d post-processing, all images become base64 data URIs. During writing (Step 8b), use relative paths to keep agent context clean.
+- **HTML must be self-contained** — during writing (Step 8b), use relative image paths; after assembly, run `scripts/embed_html_images.py` in Step 8d so every final `<img>` uses a base64 data URI.
 - **Content depth**: Chinese character count must meet the target in the depth adaptation table (≥8000 for a 15-page paper). If below target, expand weakest sections.
 - Mind map uses the EXACT template from `references/mindmap-template.md`
 - HTML has 5-7 top-level sections, not flat headings
